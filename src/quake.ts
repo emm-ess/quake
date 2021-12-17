@@ -44,8 +44,8 @@ export class Quake {
             return 0
         }
         else if (now > endTimeValue) {
-             return undefined
-         }
+            return undefined
+        }
         else if (now < startTimeValue + attackTime) {
             const step = (now - startTimeValue) / attackTime
             return magnitude * envelope(step, STEEPNESS_ATTACK)

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export type QuakeMessage = {
     action: 'create' | 'update'
     data: QuakeData
@@ -28,3 +29,4 @@ export type QuakeProperties = {
     source_catalog: string
     flynn_region: string
 }
+/* eslint-enable camelcase */

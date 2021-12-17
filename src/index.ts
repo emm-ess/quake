@@ -1,4 +1,4 @@
-import{plot, red} from 'asciichart'
+import {plot, red} from 'asciichart'
 import axios from 'axios'
 import Table from 'cli-table3'
 import type {MessageEvent} from 'sockjs-client'
@@ -8,10 +8,10 @@ import WebSocket from 'ws'
 
 // eslint-disable-next-line import/no-unresolved,node/no-missing-import
 import {Quake} from './quake.js'
-import {QuakeData, QuakeProperties} from './types'
 import type {QuakeMessage} from './types'
+import {QuakeData, QuakeProperties} from './types'
 // eslint-disable-next-line import/no-unresolved,node/no-missing-import
-import {ensureArrayLength, scale} from './util.js'
+import {ensureArrayLength} from './util.js'
 
 // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
 Object.assign(global, {WebSocket})
@@ -23,10 +23,20 @@ Object.assign(global, {WebSocket})
 const DELAY_MINUTES = 60
 const DELAY_MS = DELAY_MINUTES * 60 * 1000
 
+/*  eslint-disable
+    @typescript-eslint/no-unsafe-assignment,
+    @typescript-eslint/no-unsafe-call,
+    @typescript-eslint/no-unsafe-member-access
+*/
 const sock = new SockJS('https://www.seismicportal.eu/standing_order')
 sock.addEventListener('open', () => console.log('connected'))
 sock.addEventListener('close', () => console.log('disconnected'))
 sock.addEventListener('message', messageHandler)
+/*  eslint-enable
+    @typescript-eslint/no-unsafe-assignment,
+    @typescript-eslint/no-unsafe-call,
+    @typescript-eslint/no-unsafe-member-access
+*/
 
 const quakes: Quake[] = []
 const colWidths = [10, 10, 7, 5, 9]
@@ -52,14 +62,14 @@ function messageHandler(event: MessageEvent): void {
 
 async function queryAlreadyKnownQuakes(): Promise<void> {
     const delayedNow = new Date(Date.now() - DELAY_MS)
-    const params = {
+    const parameters = {
         format: 'json',
-        starttime: delayedNow.toISOString()
+        starttime: delayedNow.toISOString(),
     }
-    const {data} = await axios.get<{features: QuakeData[]}>('https://www.seismicportal.eu/fdsnws/event/1/query', {params})
-    data.features.forEach(({properties}) => {
+    const {data} = await axios.get<{features: QuakeData[]}>('https://www.seismicportal.eu/fdsnws/event/1/query', {params: parameters})
+    for (const {properties} of data.features) {
         addQuake(properties)
-    })
+    }
     sortQuakes()
 }
 
@@ -74,7 +84,7 @@ function addQuake(properties: QuakeProperties): void {
     }
 }
 
-function sumQuakes(now:  number): number {
+function sumQuakes(now: number): number {
     quakeTable.splice(0)
     let summedStrength = 0
     for (const quake of quakes) {
