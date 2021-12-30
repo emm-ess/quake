@@ -5,10 +5,7 @@ module.exports = {
         node: true,
     },
     parserOptions: {
-        parser: '@typescript-eslint/parser',
         project: './tsconfig.json',
     },
-    extends: [
-        'emm-ess-base/typescript',
-    ],
+    extends: '@emm-ess-configs/eslint-config/typescript',
 }
